@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd%22%3E%22%3E">
+  
+<mapper namespace="com.kodasfiledata.dao.SensorDao">
+
+	<select id="getSensorList" parameterType="com.kodasfiledata.parameter.SensorParameter" resultType="com.kodasfiledata.entity.Sensor">
+	SELECT *
+		FROM (	
+				SELECT
+				(ROW_NUMBER() OVER (ORDER BY DBMS_RANDOM.RANDOM )) AS RowNumber,
+			<!-- <choose>
+	 				<when test="countNumber != null and countNumber != ''">
+					</when>
+					<otherwise>
+						(ROW_NUMBER() OVER (ORDER BY A.OPRT_YMD, A.OPRT_TM )) AS RowNumber,
+					</otherwise>
+				</choose> -->
+			A.* FROM OPN.VKD0101 A 
+			<where>
+				<if test="environment1 != null and environment1 != ''">
+					<foreach item="environment1" index="index" collection="environment1" open="(" separator="or" close=")">
+						 A.TEST_ENVR_DSCD = #{environment1}
+					</foreach>
+				</if>
+				<if test="startDate != null and startDate!= '' and endDate != null and endDate != ''">
+					AND A.OPRT_YMD BETWEEN #{startDate} AND #{endDate}
+				</if>
+				<if test="location != null and location != ''">
+					AND A.OPRT_AREA_NM LIKE '%' || #{location} || '%'
+				</if>
+				<if test="senTp != null and senTp != ''">
+					AND SEN_TP = #{senTp}
+				</if>
+				<if test="pstnNo != null and pstnNo != ''">
+					AND PSTN_NO = #{pstnNo}
+				</if>
+				<if test="sunlight != null and sunlight != ''">
+					AND A.ILMN_CL_NM = #{sunlight}
+				</if>
+				<if test="lowVelocity != null and lowVelocity > 0 and highVelocity != null and highVelocity > 0">
+					AND A.OPRT_SPED_VAL BETWEEN #{lowVelocity} AND #{highVelocity}
+				</if>
+				<if test="weather != null and weather != ''">
+					AND WTHR_DS_NM = #{weather}
+				</if>
+				<if test="conditions != null and conditions != ''">
+					AND A.ROAD_CRCM_CLCD = #{conditions}
+				</if>
+				<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' or
+				bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' or
+				stopLine != null and stopLine != '' or crossWalk != null and crossWalk != '' or
+				construction != null and construction != '' or bump != null and bump != '' or traffic != null and traffic != ''">
+				 AND (
+				 </if>
+				<trim prefixOverrides="OR"> 
+					<if test="person != null and person != ''">
+						OR HUMN_GRUP_CNT <![CDATA[>]]> 0
+					</if>
+	 				<if test="car != null and car != ''">
+						OR PASG_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="truck != null and truck != ''">
+						OR TRCK_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="bus != null and bus != ''">
+						OR BUS_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="specialCar != null and specialCar != ''">
+						OR SPAC_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="motorCycle != null and motorCycle != ''">
+						OR MTCY_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="stopLine != null and stopLine != ''">
+						OR SPLE_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="crossWalk != null and crossWalk != ''">
+						OR CSWK_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="traffic != null and traffic != ''">
+						OR TLIGT_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="construction != null and construction != ''">
+						OR RK_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="bump != null and bump != ''">
+						OR SDBP_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' or
+					bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' or
+					stopLine != null and stopLine != '' or crossWalk != null and crossWalk != '' or
+					construction != null and construction != '' or bump != null and bump != '' or traffic != null and traffic != ''">
+						)
+					</if>
+				</trim>
+			</where>
+				 	) T
+					WHERE T.rownumber &gt; (#{page}-1)*100 
+				<choose>
+	 				<when test="countNumber != null and countNumber != ''">
+						AND T.rownumber &lt; = #{countNumber}
+					</when>
+					<otherwise>
+					 	AND T.rownumber &lt; = #{page}*100
+					</otherwise>
+				</choose>
+	</select>
+	
+	
+	<select id="getSensorListAll" parameterType="com.kodasfiledata.parameter.SensorParameter" resultType="com.kodasfiledata.entity.Sensor">
+			SELECT *
+				FROM (	
+				SELECT
+				(ROW_NUMBER() OVER (ORDER BY A.OPRT_YMD, A.OPRT_TM )) AS RowNumber,
+				A.*
+			FROM OPN.VKD0101 A 
+			<where>
+				<if test="environment1 != null and environment1 != ''">
+					<foreach item="environment1" index="index" collection="environment1" open="(" separator="or" close=")">
+						 A.TEST_ENVR_DSCD = #{environment1}
+					</foreach>
+				</if>
+				<if test="startDate != null and startDate!= '' and endDate != null and endDate != ''">
+					AND A.OPRT_YMD BETWEEN #{startDate} AND #{endDate}
+				</if>
+				<if test="location != null and location != ''">
+					AND A.OPRT_AREA_NM LIKE '%' || #{location} || '%'
+				</if>
+				<if test="sunlight != null and sunlight != ''">
+					AND A.ILMN_CL_NM = #{sunlight}
+				</if>
+				<if test="lowVelocity != null and lowVelocity > 0 and highVelocity != null and highVelocity > 0">
+					AND A.OPRT_SPED_VAL BETWEEN #{lowVelocity} AND #{highVelocity}
+				</if>
+				<if test="weather != null and weather != ''">
+					AND WTHR_DS_NM = #{weather}
+				</if>
+				<if test="senTp != null and senTp != ''">
+					AND SEN_TP = #{senTp}
+				</if>
+				<if test="pstnNo != null and pstnNo != ''">
+					AND PSTN_NO = #{pstnNo}
+				</if>
+				<if test="conditions != null and conditions != ''">
+					AND A.ROAD_CRCM_CLCD = #{conditions}
+				</if>
+				<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' or
+				bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' or
+				stopLine != null and stopLine != '' or crossWalk != null and crossWalk != '' or
+				construction != null and construction != '' or bump != null and bump != '' or traffic != null and traffic != ''">
+				 AND (
+				 </if>
+				<trim prefixOverrides="OR"> 
+					<if test="person != null and person != ''">
+						OR HUMN_GRUP_CNT <![CDATA[>]]> 0
+					</if>
+	 				<if test="car != null and car != ''">
+						OR PASG_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="truck != null and truck != ''">
+						OR TRCK_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="bus != null and bus != ''">
+						OR BUS_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="specialCar != null and specialCar != ''">
+						OR SPAC_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="motorCycle != null and motorCycle != ''">
+						OR MTCY_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="stopLine != null and stopLine != ''">
+						OR SPLE_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="crossWalk != null and crossWalk != ''">
+						OR CSWK_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="traffic != null and traffic != ''">
+						OR TLIGT_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="construction != null and construction != ''">
+						OR RK_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="bump != null and bump != ''">
+						OR SDBP_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' or
+					bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' or
+					stopLine != null and stopLine != '' or crossWalk != null and crossWalk != '' or
+					construction != null and construction != '' or bump != null and bump != '' or traffic != null and traffic != ''">
+						)
+					</if>
+				</trim>
+			</where>
+				 	) T
+				 <choose>
+	 				<when test="page == 1">
+						WHERE T.rownumber &gt;= #{page} 
+					</when>
+					<otherwise>
+					 	WHERE T.rownumber &gt; = #{page}+1
+					</otherwise>
+				</choose>
+					AND T.rownumber &lt;= #{page2}
+	</select>
+	
+		<select id="getSensorListTotal" parameterType="com.kodasfiledata.parameter.SensorParameter" resultType="int">
+			SELECT
+			COUNT(*)
+			FROM OPN.VKD0101 
+			<where>
+				<if test="environment1 != null and environment1 != ''">
+					<foreach item="environment1" index="index" collection="environment1" open="(" separator="or" close=")">
+						 TEST_ENVR_DSCD = #{environment1}
+					</foreach>
+				</if>
+				<if test="startDate != null and startDate!= '' and endDate != null and endDate != ''">
+					AND OPRT_YMD BETWEEN #{startDate} AND #{endDate}
+				</if>
+				<if test="location != null and location != ''">
+					AND OPRT_AREA_NM LIKE '%' || #{location} || '%'
+				</if>
+				<if test="sunlight != null and sunlight != ''">
+					AND ILMN_CL_NM = #{sunlight}
+				</if>
+				<if test="lowVelocity != null and lowVelocity > 0 and highVelocity != null and highVelocity > 0">
+					AND OPRT_SPED_VAL BETWEEN #{lowVelocity} AND #{highVelocity}
+				</if>
+				<if test="weather != null and weather != ''">
+					AND WTHR_DS_NM = #{weather}
+				</if>
+				<if test="conditions != null and conditions != ''">
+					AND ROAD_CRCM_CLCD = #{conditions}
+				</if>
+				<if test="senTp != null and senTp != ''">
+					AND SEN_TP = #{senTp}
+				</if>
+				<if test="pstnNo != null and pstnNo != ''">
+					AND PSTN_NO = #{pstnNo}
+				</if>
+				<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' or
+				bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' or
+				stopLine != null and stopLine != '' or crossWalk != null and crossWalk != '' or
+				construction != null and construction != '' or bump != null and bump != '' or traffic != null and traffic != ''">
+				 AND (
+				 </if>
+				<trim prefixOverrides="OR"> 
+					<if test="person != null and person != ''">
+						OR HUMN_GRUP_CNT <![CDATA[>]]> 0
+					</if>
+	 				<if test="car != null and car != ''">
+						OR PASG_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="truck != null and truck != ''">
+						OR TRCK_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="bus != null and bus != ''">
+						OR BUS_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="specialCar != null and specialCar != ''">
+						OR SPAC_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="motorCycle != null and motorCycle != ''">
+						OR MTCY_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="stopLine != null and stopLine != ''">
+						OR SPLE_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="crossWalk != null and crossWalk != ''">
+						OR CSWK_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="traffic != null and traffic != ''">
+						OR TLIGT_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="construction != null and construction != ''">
+						OR RK_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="bump != null and bump != ''">
+						OR SDBP_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' or
+					bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' or
+					stopLine != null and stopLine != '' or crossWalk != null and crossWalk != '' or
+					construction != null and construction != '' or bump != null and bump != '' or traffic != null and traffic != ''">
+						)
+					</if>
+				</trim>
+			</where>
+		</select>
+	</mapper>

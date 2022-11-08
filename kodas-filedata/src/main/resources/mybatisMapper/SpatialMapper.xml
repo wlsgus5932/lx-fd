@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kodasfiledata.dao.SpatialDao">
+	<select id="getSpatialList" parameterType="com.kodasfiledata.parameter.SpatialParameter" resultType="com.kodasfiledata.entity.Spatial">
+		SELECT * FROM 
+				<if test="indexRatio == '250'">
+					OPN.VKD0017
+				</if>
+				<if test="indexRatio == '1000'">
+					OPN.VKD0007
+				</if>
+					
+				<where>
+  				<if test="indexValue.size != 0 and indexRatio == '1000'">
+					<foreach item="indexValue" index="index" collection="indexValue" open="(" separator="or" close=")">
+						MPFR_INDX_VAL = #{indexValue}
+                    </foreach>
+				</if>
+				<if test="indexValue.size != 0 and indexRatio == '250'">
+					<foreach item="indexValue" index="index" collection="indexValue" open="(" separator="or" close=")">
+						MPFR_INDX_250_VAL = #{indexValue}
+                    </foreach>
+				</if>
+				<if test="location != null and location != ''">
+					AND PHTG_PSTN_NM LIKE '%' || #{location} || '%'
+				</if>
+				<if test="dataType != null and dataType != ''">
+					AND PHTG_DATA_NM = #{dataType}
+				</if>
+				<if test="targetType != null and targetType != ''">
+					AND DATA_TYPE_NM = #{targetType}
+				</if>
+				</where>
+	</select>
+	
+	<select id="getIsSectorList" parameterType="com.kodasfiledata.parameter.SectorParameter" resultType="com.kodasfiledata.entity.Sector" >
+		SELECT DISTINCT T.* FROM 
+		(
+		SELECT FILE_NM, SUBSTR(FILE_NM, -29, 20) AS DATE_NM, SUBSTR(FILE_NM, -8, 4)
+		AS DATA_SORT, OPRT_DTM, LTUD_CRDN_VAL, LNGD_CRDN_VAL FROM OPN.vkd0012 WHERE LTUD_CRDN_VAL IS NOT NULL AND LTUD_CRDN_VAL >0
+		AND FILE_PATH LIKE '%'||#{dtm}||'%' AND DATA_TYPE LIKE '%'|| #{sen_tp} || '%' AND PSTN_NO LIKE '%' || #{pstn_no} || '%'
+		) T
+		  where DATE_NM LIKE '%'||#{dtm}||'%' ORDER BY T.DATE_NM, T.DATA_SORT;
+	</select>
+	
+	<select id="getIsSectorOneList" parameterType="com.kodasfiledata.parameter.SectorParameter" resultType="com.kodasfiledata.entity.Sector" >
+		SELECT lngd_crdn_val, ltud_crdn_val FROM OPN.VKD0012 WHERE FILE_NM LIKE '%'||#{file_nm}||'%'
+	</select>
+	
+	<select id="getIsSectorListAll" resultType="com.kodasfiledata.entity.Sector" >
+		SELECT DISTINCT T.* FROM 
+		(
+		SELECT FILE_NM, SUBSTR(FILE_NM, -29, 20) AS DATE_NM, SUBSTR(FILE_NM, -8, 4)
+		AS DATA_SORT, LTUD_CRDN_VAL, LNGD_CRDN_VAL, ROW_NUMBER() OVER (ORDER BY DBMS_RANDOM.RANDOM()) AS RNUM FROM OPN.TSM0001 WHERE LTUD_CRDN_VAL IS NOT NULL AND LTUD_CRDN_VAL <![CDATA[>]]> 0
+		AND LTUD_CRDN_VAL NOT LIKE '33' AND LTUD_CRDN_VAL NOT LIKE '35' AND LTUD_CRDN_VAL NOT LIKE '37'
+		) T
+		WHERE T.RNUM <![CDATA[<=]]> 2000 ORDER BY T.DATE_NM, T.DATA_SORT;
+	</select>
+	
+</mapper>

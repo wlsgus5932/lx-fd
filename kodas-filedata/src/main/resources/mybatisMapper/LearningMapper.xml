@@ -1,0 +1,1166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd%22%3E%22%3E">
+  
+<mapper namespace="com.kodasfiledata.dao.LearningDao">
+
+	<select id="getLearningList" parameterType="com.kodasfiledata.parameter.LearningParameter" resultType="com.kodasfiledata.entity.Learning">
+		SELECT *
+		FROM (	
+						SELECT 
+					 	(ROW_NUMBER() OVER (ORDER BY DBMS_RANDOM.RANDOM )) AS RowNumber,
+		<!-- <choose>
+	 				<when test="countNumber != null and countNumber != ''">
+					</when>
+					<otherwise>
+						(ROW_NUMBER() OVER (ORDER BY A.OPRT_YMD, A.OPRT_TM )) AS RowNumber,
+					</otherwise>
+				</choose> -->
+				A.* FROM OPN.VKD0102 A
+			<where>
+				<if test="environment1 != null and environment1 != ''">
+					<foreach item="environment1" index="index" collection="environment1" open="(" separator="or" close=")">
+						A.TEST_ENVR_DSCD = #{environment1}
+					</foreach>
+				</if>
+				<if test="startDate != null and startDate!= '' and endDate != null and endDate != ''">
+					AND A.OPRT_YMD BETWEEN #{startDate} AND #{endDate}
+				</if>
+				<if test="location != null and location != ''">
+					AND A.OPRT_AREA_NM LIKE '%' || #{location} || '%'
+				</if>
+				<if test="sunlight != null and sunlight != ''">
+					AND A.ILMN_CL_NM = #{sunlight}
+				</if>
+				<if test="lowVelocity != null and lowVelocity > 0 and highVelocity != null and highVelocity > 0">
+					AND A.OPRT_SPED_VAL BETWEEN #{lowVelocity} AND #{highVelocity}
+				</if>
+				<if test="weather != null and weather != ''">
+					AND WTHR_DS_NM = #{weather}
+				</if>
+				<if test="conditions != null and conditions != ''">
+					AND A.ROAD_CRCM_CLCD = #{conditions}
+				</if>
+				<if test= "learningType != null and learningType != ''">
+					AND DATA_TYPE = #{learningType}
+				</if>
+				<if test= "learningType2 != null and learningType2 != ''">
+					AND PSTN_NO = #{learningType2}
+				</if>
+				<if test="senTp != null and senTp != ''">
+					AND SEN_TP = #{senTp}
+				</if>
+				<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' 
+				or bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' 
+				or bet_mdst_cnt != null and bet_mdst_cnt != '' or brm_crsw_cnt != null and brm_crsw_cnt != '' or brm_stln_cnt != null and brm_stln_cnt != '' 
+				or brs_rdwk_cnt != null and brs_rdwk_cnt != '' or brs_stop_cnt != null and brs_stop_cnt != '' or brs_stln_cnt != null and brs_stln_cnt != '' 
+				or brs_etc_cnt != null and brs_etc_cnt != '' or brs_crsw_cnt != null and brs_crsw_cnt != '' or btl_bs_cnt != null and btl_bs_cnt != '' 
+				or btl_bus_cnt != null and btl_bus_cnt != '' or btl_vhcl_cnt != null and btl_vhcl_cnt != '' or btl_pds_cnt != null and btl_pds_cnt != '' 
+				or brm_sdbp_cnt != null and brm_sdbp_cnt != '' or brm_pcad_cnt != null and brm_pcad_cnt != '' or brm_dnir_cnt != null and brm_dnir_cnt != '' 
+				or brm_yd_cnt != null and brm_yd_cnt != '' or brs_desy_cnt != null and brs_desy_cnt != '' or brs_sfcn_cnt != null and brs_sfcn_cnt != '' 
+				or brs_norl_cnt != null and brs_norl_cnt != '' or brs_drze_cnt != null and brs_drze_cnt != '' or brs_nout_cnt != null and brs_nout_cnt != '' 
+				or brs_oewy_cnt != null and brs_oewy_cnt != '' or brs_hiwy_cnt != null and brs_hiwy_cnt != '' or brs_bs_cnt != null and brs_bs_cnt != '' 
+				or brs_nopk_cnt != null and brs_nopk_cnt != '' or brs_pkar_cnt != null and brs_pkar_cnt != '' or brs_nosd_cnt != null and brs_nosd_cnt != '' 
+				or brs_noen_cnt != null and brs_noen_cnt != '' or brs_hilt_cnt != null and brs_hilt_cnt != '' or brs_welt_cnt != null and brs_welt_cnt != '' 
+				or brs_mxsp_cnt != null and brs_mxsp_cnt != '' or brs_misp_cnt != null and brs_misp_cnt != '' or brs_nopg_cnt != null and brs_nopg_cnt != '' 
+				or brs_nopa_cnt != null and brs_nopa_cnt != '' or brs_rdat_cnt != null and brs_rdat_cnt != '' or brs_nocr_cnt != null and brs_nocr_cnt != '' 
+				or set_mdst_cnt != null and set_mdst_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or srm_stln_cnt != null and srm_stln_cnt != '' 
+				or srs_rdwk_cnt != null and srs_rdwk_cnt != '' or srs_stop_cnt != null and srs_stop_cnt != '' or srs_stln_cnt != null and srs_stln_cnt != '' 
+				or srs_etc_cnt != null and srs_etc_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or stl_bs_cnt != null and stl_bs_cnt != ''
+				or stl_bus_cnt != null and stl_bus_cnt != '' or stl_vhcl_cnt != null and stl_vhcl_cnt != '' or stl_pds_cnt != null and stl_pds_cnt != '' 
+				or srm_sdbp_cnt != null and srm_sdbp_cnt != '' or srm_pcad_cnt != null and srm_pcad_cnt != '' or srm_dnir_cnt != null and srm_dnir_cnt != '' 
+				or srm_yd_cnt != null and srm_yd_cnt != '' or srs_desy_cnt != null and srs_desy_cnt != '' or srs_sfcn_cnt != null and srs_sfcn_cnt != '' 
+				or srs_norl_cnt != null and srs_norl_cnt != '' or srs_drze_cnt != null and srs_drze_cnt != '' or srs_nout_cnt != null and srs_nout_cnt != '' 
+				or srs_oewy_cnt != null and srs_oewy_cnt != '' or srs_hiwy_cnt != null and srs_hiwy_cnt != '' or srs_bs_cnt != null and srs_bs_cnt != '' 
+				or srs_nopk_cnt != null and srs_nopk_cnt != '' or srs_pkar_cnt != null and srs_pkar_cnt != '' or srs_nosd_cnt != null and srs_nosd_cnt != '' 
+				or srs_noen_cnt != null and srs_noen_cnt != '' or srs_hilt_cnt != null and srs_hilt_cnt != '' or srs_welt_cnt != null and srs_welt_cnt != '' 
+				or srs_mxsp_cnt != null and srs_mxsp_cnt != '' or srs_misp_cnt != null and srs_misp_cnt != '' or srs_nopg_cnt != null and srs_nopg_cnt != '' 
+				or srs_nopa_cnt != null and srs_nopa_cnt != '' or srs_rdat_cnt != null and srs_rdat_cnt != '' or srs_nocr_cnt != null and srs_nocr_cnt != '' 
+				">
+				 AND (
+				 </if>
+				 
+				<trim prefixOverrides="OR"> 
+				
+				<if test="person != null and person != ''">
+					OR HUMN_GRUP_CNT <![CDATA[>]]> 0
+				</if>
+ 				<if test="car != null and car != ''">
+					OR PASG_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="truck != null and truck != ''">
+					OR TRCK_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="bus != null and bus != ''">
+					OR BUS_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="specialCar != null and specialCar != ''">
+					OR SPAC_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="motorCycle != null and motorCycle != ''">
+					OR MTCY_CNT <![CDATA[>]]> 0
+				</if>
+				
+				
+				<if test="bet_mdst_cnt != null and bet_mdst_cnt != ''">
+					OR bet_mdst_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_crsw_cnt != null and brm_crsw_cnt != ''">
+					OR brm_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_stln_cnt != null and brm_stln_cnt != ''">
+					OR brm_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_rdwk_cnt != null and brs_rdwk_cnt != ''">
+					OR brs_rdwk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_stop_cnt != null and brs_stop_cnt != ''">
+					OR brs_stop_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_stln_cnt != null and brs_stln_cnt != ''">
+					OR brs_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_etc_cnt != null and brs_etc_cnt != ''">
+					OR brs_etc_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_crsw_cnt != null and brs_crsw_cnt != ''">
+					OR brs_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_bs_cnt != null and btl_bs_cnt != ''">
+					OR btl_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_bus_cnt != null and btl_bus_cnt != ''">
+					OR btl_bus_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_vhcl_cnt != null and btl_vhcl_cnt != ''">
+					OR btl_vhcl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_pds_cnt != null and btl_pds_cnt != ''">
+					OR btl_pds_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_sdbp_cnt != null and brm_sdbp_cnt != ''">
+					OR brm_sdbp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_pcad_cnt != null and brm_pcad_cnt != ''">
+					OR brm_pcad_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_dnir_cnt != null and brm_dnir_cnt != ''">
+					OR brm_dnir_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_yd_cnt != null and brm_yd_cnt != ''">
+					OR brm_yd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_desy_cnt != null and brs_desy_cnt != ''">
+					OR brs_desy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_sfcn_cnt != null and brs_sfcn_cnt != ''">
+					OR brs_sfcn_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_norl_cnt != null and brs_norl_cnt != ''">
+					OR brs_norl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_drze_cnt != null and brs_drze_cnt != ''">
+					OR brs_drze_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nout_cnt != null and brs_nout_cnt != ''">
+					OR brs_nout_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_oewy_cnt != null and brs_oewy_cnt != ''">
+					OR brs_oewy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_hiwy_cnt != null and brs_hiwy_cnt != ''">
+					OR brs_hiwy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_bs_cnt != null and brs_bs_cnt != ''">
+					OR brs_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nopk_cnt != null and brs_nopk_cnt != ''">
+					OR brs_nopk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_pkar_cnt != null and brs_pkar_cnt != ''">
+					OR brs_pkar_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nosd_cnt != null and brs_nosd_cnt != ''">
+					OR brs_nosd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_noen_cnt != null and brs_noen_cnt != ''">
+					OR brs_noen_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_hilt_cnt != null and brs_hilt_cnt != ''">
+					OR brs_hilt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_welt_cnt != null and brs_welt_cnt != ''">
+					OR brs_welt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_mxsp_cnt != null and brs_mxsp_cnt != ''">
+					OR brs_mxsp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_misp_cnt != null and brs_misp_cnt != ''">
+					OR brs_misp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nopg_cnt != null and brs_nopg_cnt != ''">
+					OR brs_nopg_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nopa_cnt != null and brs_nopa_cnt != ''">
+					OR brs_nopa_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_rdat_cnt != null and brs_rdat_cnt != ''">
+					OR brs_rdat_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nocr_cnt != null and brs_nocr_cnt != ''">
+					OR brs_nocr_cnt <![CDATA[>]]> 0
+				</if>
+				
+				<if test="set_mdst_cnt != null and set_mdst_cnt != ''">
+					OR set_mdst_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_crsw_cnt != null and srm_crsw_cnt != ''">
+					OR srm_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_stln_cnt != null and srm_stln_cnt != ''">
+					OR srm_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_rdwk_cnt != null and srs_rdwk_cnt != ''">
+					OR srs_rdwk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_stop_cnt != null and srs_stop_cnt != ''">
+					OR srs_stop_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_stln_cnt != null and srs_stln_cnt != ''">
+					OR srs_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_etc_cnt != null and srs_etc_cnt != ''">
+					OR srs_etc_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_crsw_cnt != null and srm_crsw_cnt != ''">
+					OR srm_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_bs_cnt != null and stl_bs_cnt != ''">
+					OR stl_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_bus_cnt != null and stl_bus_cnt != ''">
+					OR stl_bus_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_vhcl_cnt != null and stl_vhcl_cnt != ''">
+					OR stl_vhcl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_pds_cnt != null and stl_pds_cnt != ''">
+					OR stl_pds_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_sdbp_cnt != null and srm_sdbp_cnt != ''">
+					OR srm_sdbp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_pcad_cnt != null and srm_pcad_cnt != ''">
+					OR srm_pcad_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_dnir_cnt != null and srm_dnir_cnt != ''">
+					OR srm_dnir_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_yd_cnt != null and srm_yd_cnt != ''">
+					OR srm_yd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_desy_cnt != null and srs_desy_cnt != ''">
+					OR srs_desy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_sfcn_cnt != null and srs_sfcn_cnt != ''">
+					OR srs_sfcn_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_norl_cnt != null and srs_norl_cnt != ''">
+					OR srs_norl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_drze_cnt != null and srs_drze_cnt != ''">
+					OR srs_drze_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nout_cnt != null and srs_nout_cnt != ''">
+					OR srs_nout_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_oewy_cnt != null and srs_oewy_cnt != ''">
+					OR srs_oewy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_hiwy_cnt != null and srs_hiwy_cnt != ''">
+					OR srs_hiwy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_bs_cnt != null and srs_bs_cnt != ''">
+					OR srs_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nopk_cnt != null and srs_nopk_cnt != ''">
+					OR srs_nopk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_pkar_cnt != null and srs_pkar_cnt != ''">
+					OR srs_pkar_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nosd_cnt != null and srs_nosd_cnt != ''">
+					OR srs_nosd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_noen_cnt != null and srs_noen_cnt != ''">
+					OR srs_noen_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_hilt_cnt != null and srs_hilt_cnt != ''">
+					OR srs_hilt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_welt_cnt != null and srs_welt_cnt != ''">
+					OR srs_welt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_mxsp_cnt != null and srs_mxsp_cnt != ''">
+					OR srs_mxsp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_misp_cnt != null and srs_misp_cnt != ''">
+					OR srs_misp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nopg_cnt != null and srs_nopg_cnt != ''">
+					OR srs_nopg_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nopa_cnt != null and srs_nopa_cnt != ''">
+					OR srs_nopa_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_rdat_cnt != null and srs_rdat_cnt != ''">
+					OR srs_rdat_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nocr_cnt != null and srs_nocr_cnt != ''">
+					OR srs_nocr_cnt <![CDATA[>]]> 0
+				</if>
+				
+				<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' 
+				or bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' 
+				or bet_mdst_cnt != null and bet_mdst_cnt != '' or brm_crsw_cnt != null and brm_crsw_cnt != '' or brm_stln_cnt != null and brm_stln_cnt != '' 
+				or brs_rdwk_cnt != null and brs_rdwk_cnt != '' or brs_stop_cnt != null and brs_stop_cnt != '' or brs_stln_cnt != null and brs_stln_cnt != '' 
+				or brs_etc_cnt != null and brs_etc_cnt != '' or brs_crsw_cnt != null and brs_crsw_cnt != '' or btl_bs_cnt != null and btl_bs_cnt != '' 
+				or btl_bus_cnt != null and btl_bus_cnt != '' or btl_vhcl_cnt != null and btl_vhcl_cnt != '' or btl_pds_cnt != null and btl_pds_cnt != '' 
+				or brm_sdbp_cnt != null and brm_sdbp_cnt != '' or brm_pcad_cnt != null and brm_pcad_cnt != '' or brm_dnir_cnt != null and brm_dnir_cnt != '' 
+				or brm_yd_cnt != null and brm_yd_cnt != '' or brs_desy_cnt != null and brs_desy_cnt != '' or brs_sfcn_cnt != null and brs_sfcn_cnt != '' 
+				or brs_norl_cnt != null and brs_norl_cnt != '' or brs_drze_cnt != null and brs_drze_cnt != '' or brs_nout_cnt != null and brs_nout_cnt != '' 
+				or brs_oewy_cnt != null and brs_oewy_cnt != '' or brs_hiwy_cnt != null and brs_hiwy_cnt != '' or brs_bs_cnt != null and brs_bs_cnt != '' 
+				or brs_nopk_cnt != null and brs_nopk_cnt != '' or brs_pkar_cnt != null and brs_pkar_cnt != '' or brs_nosd_cnt != null and brs_nosd_cnt != '' 
+				or brs_noen_cnt != null and brs_noen_cnt != '' or brs_hilt_cnt != null and brs_hilt_cnt != '' or brs_welt_cnt != null and brs_welt_cnt != '' 
+				or brs_mxsp_cnt != null and brs_mxsp_cnt != '' or brs_misp_cnt != null and brs_misp_cnt != '' or brs_nopg_cnt != null and brs_nopg_cnt != '' 
+				or brs_nopa_cnt != null and brs_nopa_cnt != '' or brs_rdat_cnt != null and brs_rdat_cnt != '' or brs_nocr_cnt != null and brs_nocr_cnt != '' 
+				or set_mdst_cnt != null and set_mdst_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or srm_stln_cnt != null and srm_stln_cnt != '' 
+				or srs_rdwk_cnt != null and srs_rdwk_cnt != '' or srs_stop_cnt != null and srs_stop_cnt != '' or srs_stln_cnt != null and srs_stln_cnt != '' 
+				or srs_etc_cnt != null and srs_etc_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or stl_bs_cnt != null and stl_bs_cnt != ''
+				or stl_bus_cnt != null and stl_bus_cnt != '' or stl_vhcl_cnt != null and stl_vhcl_cnt != '' or stl_pds_cnt != null and stl_pds_cnt != '' 
+				or srm_sdbp_cnt != null and srm_sdbp_cnt != '' or srm_pcad_cnt != null and srm_pcad_cnt != '' or srm_dnir_cnt != null and srm_dnir_cnt != '' 
+				or srm_yd_cnt != null and srm_yd_cnt != '' or srs_desy_cnt != null and srs_desy_cnt != '' or srs_sfcn_cnt != null and srs_sfcn_cnt != '' 
+				or srs_norl_cnt != null and srs_norl_cnt != '' or srs_drze_cnt != null and srs_drze_cnt != '' or srs_nout_cnt != null and srs_nout_cnt != '' 
+				or srs_oewy_cnt != null and srs_oewy_cnt != '' or srs_hiwy_cnt != null and srs_hiwy_cnt != '' or srs_bs_cnt != null and srs_bs_cnt != '' 
+				or srs_nopk_cnt != null and srs_nopk_cnt != '' or srs_pkar_cnt != null and srs_pkar_cnt != '' or srs_nosd_cnt != null and srs_nosd_cnt != '' 
+				or srs_noen_cnt != null and srs_noen_cnt != '' or srs_hilt_cnt != null and srs_hilt_cnt != '' or srs_welt_cnt != null and srs_welt_cnt != '' 
+				or srs_mxsp_cnt != null and srs_mxsp_cnt != '' or srs_misp_cnt != null and srs_misp_cnt != '' or srs_nopg_cnt != null and srs_nopg_cnt != '' 
+				or srs_nopa_cnt != null and srs_nopa_cnt != '' or srs_rdat_cnt != null and srs_rdat_cnt != '' or srs_nocr_cnt != null and srs_nocr_cnt != '' 
+				">
+					)
+					</if>
+				</trim>
+			</where>
+					 ) T
+					WHERE T.rownumber &gt; ((#{page}-1)*100)
+				<choose>
+	 				<when test="countNumber != null and countNumber != ''">
+						AND T.rownumber &lt; = #{countNumber}
+					</when>
+					<otherwise>
+					 	AND T.rownumber &lt; = #{page}*100
+					</otherwise>
+				</choose>
+	</select>
+	
+		<select id="getLearningListAll" parameterType="com.kodasfiledata.parameter.LearningParameter" resultType="com.kodasfiledata.entity.Learning">
+		SELECT *
+		FROM (	
+		SELECT 
+		(ROW_NUMBER() OVER (ORDER BY A.OPRT_YMD, A.OPRT_TM )) AS RowNumber,
+		A.*
+	FROM OPN.VKD0102 A
+			<where>
+				<if test="environment1 != null and environment1 != ''">
+					<foreach item="environment1" index="index" collection="environment1" open="(" separator="or" close=")">
+						A.TEST_ENVR_DSCD = #{environment1}
+					</foreach>
+				</if>
+				<if test="startDate != null and startDate!= '' and endDate != null and endDate != ''">
+					AND A.OPRT_YMD BETWEEN #{startDate} AND #{endDate}
+				</if>
+				<if test="location != null and location != ''">
+					AND A.OPRT_AREA_NM LIKE '%' || #{location} || '%'
+				</if>
+				<if test="sunlight != null and sunlight != ''">
+					AND A.ILMN_CL_NM = #{sunlight}
+				</if>
+				<if test="lowVelocity != null and lowVelocity > 0 and highVelocity != null and highVelocity > 0">
+					AND A.OPRT_SPED_VAL BETWEEN #{lowVelocity} AND #{highVelocity}
+				</if>
+				<if test="weather != null and weather != ''">
+					AND WTHR_DS_NM = #{weather}
+				</if>
+				<if test="conditions != null and conditions != ''">
+					AND A.ROAD_CRCM_CLCD = #{conditions}
+				</if>
+				<if test="senTp != null and senTp != ''">
+					AND SEN_TP = #{senTp}
+				</if>
+				<if test= "learningType != null and learningType != ''">
+					AND DATA_TYPE = #{learningType}
+				</if>
+				<if test= "learningType2 != null and learningType2 != ''">
+					AND PSTN_NO = #{learningType2}
+				</if>
+				<if test="person != null and person != ''">
+					OR HUMN_GRUP_CNT <![CDATA[>]]> 0
+				</if>
+ 				<if test="car != null and car != ''">
+					OR PASG_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="truck != null and truck != ''">
+					OR TRCK_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="bus != null and bus != ''">
+					OR BUS_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="specialCar != null and specialCar != ''">
+					OR SPAC_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="motorCycle != null and motorCycle != ''">
+					OR MTCY_CNT <![CDATA[>]]> 0
+				</if>
+				
+				<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' 
+				or bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' 
+				or bet_mdst_cnt != null and bet_mdst_cnt != '' or brm_crsw_cnt != null and brm_crsw_cnt != '' or brm_stln_cnt != null and brm_stln_cnt != '' 
+				or brs_rdwk_cnt != null and brs_rdwk_cnt != '' or brs_stop_cnt != null and brs_stop_cnt != '' or brs_stln_cnt != null and brs_stln_cnt != '' 
+				or brs_etc_cnt != null and brs_etc_cnt != '' or brs_crsw_cnt != null and brs_crsw_cnt != '' or btl_bs_cnt != null and btl_bs_cnt != '' 
+				or btl_bus_cnt != null and btl_bus_cnt != '' or btl_vhcl_cnt != null and btl_vhcl_cnt != '' or btl_pds_cnt != null and btl_pds_cnt != '' 
+				or brm_sdbp_cnt != null and brm_sdbp_cnt != '' or brm_pcad_cnt != null and brm_pcad_cnt != '' or brm_dnir_cnt != null and brm_dnir_cnt != '' 
+				or brm_yd_cnt != null and brm_yd_cnt != '' or brs_desy_cnt != null and brs_desy_cnt != '' or brs_sfcn_cnt != null and brs_sfcn_cnt != '' 
+				or brs_norl_cnt != null and brs_norl_cnt != '' or brs_drze_cnt != null and brs_drze_cnt != '' or brs_nout_cnt != null and brs_nout_cnt != '' 
+				or brs_oewy_cnt != null and brs_oewy_cnt != '' or brs_hiwy_cnt != null and brs_hiwy_cnt != '' or brs_bs_cnt != null and brs_bs_cnt != '' 
+				or brs_nopk_cnt != null and brs_nopk_cnt != '' or brs_pkar_cnt != null and brs_pkar_cnt != '' or brs_nosd_cnt != null and brs_nosd_cnt != '' 
+				or brs_noen_cnt != null and brs_noen_cnt != '' or brs_hilt_cnt != null and brs_hilt_cnt != '' or brs_welt_cnt != null and brs_welt_cnt != '' 
+				or brs_mxsp_cnt != null and brs_mxsp_cnt != '' or brs_misp_cnt != null and brs_misp_cnt != '' or brs_nopg_cnt != null and brs_nopg_cnt != '' 
+				or brs_nopa_cnt != null and brs_nopa_cnt != '' or brs_rdat_cnt != null and brs_rdat_cnt != '' or brs_nocr_cnt != null and brs_nocr_cnt != '' 
+				or set_mdst_cnt != null and set_mdst_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or srm_stln_cnt != null and srm_stln_cnt != '' 
+				or srs_rdwk_cnt != null and srs_rdwk_cnt != '' or srs_stop_cnt != null and srs_stop_cnt != '' or srs_stln_cnt != null and srs_stln_cnt != '' 
+				or srs_etc_cnt != null and srs_etc_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or stl_bs_cnt != null and stl_bs_cnt != ''
+				or stl_bus_cnt != null and stl_bus_cnt != '' or stl_vhcl_cnt != null and stl_vhcl_cnt != '' or stl_pds_cnt != null and stl_pds_cnt != '' 
+				or srm_sdbp_cnt != null and srm_sdbp_cnt != '' or srm_pcad_cnt != null and srm_pcad_cnt != '' or srm_dnir_cnt != null and srm_dnir_cnt != '' 
+				or srm_yd_cnt != null and srm_yd_cnt != '' or srs_desy_cnt != null and srs_desy_cnt != '' or srs_sfcn_cnt != null and srs_sfcn_cnt != '' 
+				or srs_norl_cnt != null and srs_norl_cnt != '' or srs_drze_cnt != null and srs_drze_cnt != '' or srs_nout_cnt != null and srs_nout_cnt != '' 
+				or srs_oewy_cnt != null and srs_oewy_cnt != '' or srs_hiwy_cnt != null and srs_hiwy_cnt != '' or srs_bs_cnt != null and srs_bs_cnt != '' 
+				or srs_nopk_cnt != null and srs_nopk_cnt != '' or srs_pkar_cnt != null and srs_pkar_cnt != '' or srs_nosd_cnt != null and srs_nosd_cnt != '' 
+				or srs_noen_cnt != null and srs_noen_cnt != '' or srs_hilt_cnt != null and srs_hilt_cnt != '' or srs_welt_cnt != null and srs_welt_cnt != '' 
+				or srs_mxsp_cnt != null and srs_mxsp_cnt != '' or srs_misp_cnt != null and srs_misp_cnt != '' or srs_nopg_cnt != null and srs_nopg_cnt != '' 
+				or srs_nopa_cnt != null and srs_nopa_cnt != '' or srs_rdat_cnt != null and srs_rdat_cnt != '' or srs_nocr_cnt != null and srs_nocr_cnt != '' 
+				">
+				 AND (
+				 </if>
+				 
+				<trim prefixOverrides="OR"> 
+				
+				<if test="person != null and person != ''">
+					OR HUMN_GRUP_CNT <![CDATA[>]]> 0
+				</if>
+ 				<if test="car != null and car != ''">
+					OR PASG_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="truck != null and truck != ''">
+					OR TRCK_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="bus != null and bus != ''">
+					OR BUS_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="specialCar != null and specialCar != ''">
+					OR SPAC_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="motorCycle != null and motorCycle != ''">
+					OR MTCY_CNT <![CDATA[>]]> 0
+				</if>
+				<if test="bet_mdst_cnt != null and bet_mdst_cnt != ''">
+					OR bet_mdst_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_crsw_cnt != null and brm_crsw_cnt != ''">
+					OR brm_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_stln_cnt != null and brm_stln_cnt != ''">
+					OR brm_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_rdwk_cnt != null and brs_rdwk_cnt != ''">
+					OR brs_rdwk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_stop_cnt != null and brs_stop_cnt != ''">
+					OR brs_stop_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_stln_cnt != null and brs_stln_cnt != ''">
+					OR brs_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_etc_cnt != null and brs_etc_cnt != ''">
+					OR brs_etc_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_crsw_cnt != null and brs_crsw_cnt != ''">
+					OR brs_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_bs_cnt != null and btl_bs_cnt != ''">
+					OR btl_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_bus_cnt != null and btl_bus_cnt != ''">
+					OR btl_bus_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_vhcl_cnt != null and btl_vhcl_cnt != ''">
+					OR btl_vhcl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_pds_cnt != null and btl_pds_cnt != ''">
+					OR btl_pds_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_sdbp_cnt != null and brm_sdbp_cnt != ''">
+					OR brm_sdbp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_pcad_cnt != null and brm_pcad_cnt != ''">
+					OR brm_pcad_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_dnir_cnt != null and brm_dnir_cnt != ''">
+					OR brm_dnir_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_yd_cnt != null and brm_yd_cnt != ''">
+					OR brm_yd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_desy_cnt != null and brs_desy_cnt != ''">
+					OR brs_desy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_sfcn_cnt != null and brs_sfcn_cnt != ''">
+					OR brs_sfcn_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_norl_cnt != null and brs_norl_cnt != ''">
+					OR brs_norl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_drze_cnt != null and brs_drze_cnt != ''">
+					OR brs_drze_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nout_cnt != null and brs_nout_cnt != ''">
+					OR brs_nout_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_oewy_cnt != null and brs_oewy_cnt != ''">
+					OR brs_oewy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_hiwy_cnt != null and brs_hiwy_cnt != ''">
+					OR brs_hiwy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_bs_cnt != null and brs_bs_cnt != ''">
+					OR brs_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nopk_cnt != null and brs_nopk_cnt != ''">
+					OR brs_nopk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_pkar_cnt != null and brs_pkar_cnt != ''">
+					OR brs_pkar_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nosd_cnt != null and brs_nosd_cnt != ''">
+					OR brs_nosd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_noen_cnt != null and brs_noen_cnt != ''">
+					OR brs_noen_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_hilt_cnt != null and brs_hilt_cnt != ''">
+					OR brs_hilt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_welt_cnt != null and brs_welt_cnt != ''">
+					OR brs_welt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_mxsp_cnt != null and brs_mxsp_cnt != ''">
+					OR brs_mxsp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_misp_cnt != null and brs_misp_cnt != ''">
+					OR brs_misp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nopg_cnt != null and brs_nopg_cnt != ''">
+					OR brs_nopg_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nopa_cnt != null and brs_nopa_cnt != ''">
+					OR brs_nopa_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_rdat_cnt != null and brs_rdat_cnt != ''">
+					OR brs_rdat_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nocr_cnt != null and brs_nocr_cnt != ''">
+					OR brs_nocr_cnt <![CDATA[>]]> 0
+				</if>
+				
+				<if test="set_mdst_cnt != null and set_mdst_cnt != ''">
+					OR set_mdst_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_crsw_cnt != null and srm_crsw_cnt != ''">
+					OR srm_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_stln_cnt != null and srm_stln_cnt != ''">
+					OR srm_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_rdwk_cnt != null and srs_rdwk_cnt != ''">
+					OR srs_rdwk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_stop_cnt != null and srs_stop_cnt != ''">
+					OR srs_stop_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_stln_cnt != null and srs_stln_cnt != ''">
+					OR srs_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_etc_cnt != null and srs_etc_cnt != ''">
+					OR srs_etc_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_crsw_cnt != null and srm_crsw_cnt != ''">
+					OR srm_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_bs_cnt != null and stl_bs_cnt != ''">
+					OR stl_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_bus_cnt != null and stl_bus_cnt != ''">
+					OR stl_bus_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_vhcl_cnt != null and stl_vhcl_cnt != ''">
+					OR stl_vhcl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_pds_cnt != null and stl_pds_cnt != ''">
+					OR stl_pds_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_sdbp_cnt != null and srm_sdbp_cnt != ''">
+					OR srm_sdbp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_pcad_cnt != null and srm_pcad_cnt != ''">
+					OR srm_pcad_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_dnir_cnt != null and srm_dnir_cnt != ''">
+					OR srm_dnir_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_yd_cnt != null and srm_yd_cnt != ''">
+					OR srm_yd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_desy_cnt != null and srs_desy_cnt != ''">
+					OR srs_desy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_sfcn_cnt != null and srs_sfcn_cnt != ''">
+					OR srs_sfcn_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_norl_cnt != null and srs_norl_cnt != ''">
+					OR srs_norl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_drze_cnt != null and srs_drze_cnt != ''">
+					OR srs_drze_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nout_cnt != null and srs_nout_cnt != ''">
+					OR srs_nout_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_oewy_cnt != null and srs_oewy_cnt != ''">
+					OR srs_oewy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_hiwy_cnt != null and srs_hiwy_cnt != ''">
+					OR srs_hiwy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_bs_cnt != null and srs_bs_cnt != ''">
+					OR srs_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nopk_cnt != null and srs_nopk_cnt != ''">
+					OR srs_nopk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_pkar_cnt != null and srs_pkar_cnt != ''">
+					OR srs_pkar_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nosd_cnt != null and srs_nosd_cnt != ''">
+					OR srs_nosd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_noen_cnt != null and srs_noen_cnt != ''">
+					OR srs_noen_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_hilt_cnt != null and srs_hilt_cnt != ''">
+					OR srs_hilt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_welt_cnt != null and srs_welt_cnt != ''">
+					OR srs_welt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_mxsp_cnt != null and srs_mxsp_cnt != ''">
+					OR srs_mxsp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_misp_cnt != null and srs_misp_cnt != ''">
+					OR srs_misp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nopg_cnt != null and srs_nopg_cnt != ''">
+					OR srs_nopg_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nopa_cnt != null and srs_nopa_cnt != ''">
+					OR srs_nopa_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_rdat_cnt != null and srs_rdat_cnt != ''">
+					OR srs_rdat_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nocr_cnt != null and srs_nocr_cnt != ''">
+					OR srs_nocr_cnt <![CDATA[>]]> 0
+				</if>
+				
+				<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' 
+				or bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' 
+				or bet_mdst_cnt != null and bet_mdst_cnt != '' or brm_crsw_cnt != null and brm_crsw_cnt != '' or brm_stln_cnt != null and brm_stln_cnt != '' 
+				or brs_rdwk_cnt != null and brs_rdwk_cnt != '' or brs_stop_cnt != null and brs_stop_cnt != '' or brs_stln_cnt != null and brs_stln_cnt != '' 
+				or brs_etc_cnt != null and brs_etc_cnt != '' or brs_crsw_cnt != null and brs_crsw_cnt != '' or btl_bs_cnt != null and btl_bs_cnt != '' 
+				or btl_bus_cnt != null and btl_bus_cnt != '' or btl_vhcl_cnt != null and btl_vhcl_cnt != '' or btl_pds_cnt != null and btl_pds_cnt != '' 
+				or brm_sdbp_cnt != null and brm_sdbp_cnt != '' or brm_pcad_cnt != null and brm_pcad_cnt != '' or brm_dnir_cnt != null and brm_dnir_cnt != '' 
+				or brm_yd_cnt != null and brm_yd_cnt != '' or brs_desy_cnt != null and brs_desy_cnt != '' or brs_sfcn_cnt != null and brs_sfcn_cnt != '' 
+				or brs_norl_cnt != null and brs_norl_cnt != '' or brs_drze_cnt != null and brs_drze_cnt != '' or brs_nout_cnt != null and brs_nout_cnt != '' 
+				or brs_oewy_cnt != null and brs_oewy_cnt != '' or brs_hiwy_cnt != null and brs_hiwy_cnt != '' or brs_bs_cnt != null and brs_bs_cnt != '' 
+				or brs_nopk_cnt != null and brs_nopk_cnt != '' or brs_pkar_cnt != null and brs_pkar_cnt != '' or brs_nosd_cnt != null and brs_nosd_cnt != '' 
+				or brs_noen_cnt != null and brs_noen_cnt != '' or brs_hilt_cnt != null and brs_hilt_cnt != '' or brs_welt_cnt != null and brs_welt_cnt != '' 
+				or brs_mxsp_cnt != null and brs_mxsp_cnt != '' or brs_misp_cnt != null and brs_misp_cnt != '' or brs_nopg_cnt != null and brs_nopg_cnt != '' 
+				or brs_nopa_cnt != null and brs_nopa_cnt != '' or brs_rdat_cnt != null and brs_rdat_cnt != '' or brs_nocr_cnt != null and brs_nocr_cnt != '' 
+				or set_mdst_cnt != null and set_mdst_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or srm_stln_cnt != null and srm_stln_cnt != '' 
+				or srs_rdwk_cnt != null and srs_rdwk_cnt != '' or srs_stop_cnt != null and srs_stop_cnt != '' or srs_stln_cnt != null and srs_stln_cnt != '' 
+				or srs_etc_cnt != null and srs_etc_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or stl_bs_cnt != null and stl_bs_cnt != ''
+				or stl_bus_cnt != null and stl_bus_cnt != '' or stl_vhcl_cnt != null and stl_vhcl_cnt != '' or stl_pds_cnt != null and stl_pds_cnt != '' 
+				or srm_sdbp_cnt != null and srm_sdbp_cnt != '' or srm_pcad_cnt != null and srm_pcad_cnt != '' or srm_dnir_cnt != null and srm_dnir_cnt != '' 
+				or srm_yd_cnt != null and srm_yd_cnt != '' or srs_desy_cnt != null and srs_desy_cnt != '' or srs_sfcn_cnt != null and srs_sfcn_cnt != '' 
+				or srs_norl_cnt != null and srs_norl_cnt != '' or srs_drze_cnt != null and srs_drze_cnt != '' or srs_nout_cnt != null and srs_nout_cnt != '' 
+				or srs_oewy_cnt != null and srs_oewy_cnt != '' or srs_hiwy_cnt != null and srs_hiwy_cnt != '' or srs_bs_cnt != null and srs_bs_cnt != '' 
+				or srs_nopk_cnt != null and srs_nopk_cnt != '' or srs_pkar_cnt != null and srs_pkar_cnt != '' or srs_nosd_cnt != null and srs_nosd_cnt != '' 
+				or srs_noen_cnt != null and srs_noen_cnt != '' or srs_hilt_cnt != null and srs_hilt_cnt != '' or srs_welt_cnt != null and srs_welt_cnt != '' 
+				or srs_mxsp_cnt != null and srs_mxsp_cnt != '' or srs_misp_cnt != null and srs_misp_cnt != '' or srs_nopg_cnt != null and srs_nopg_cnt != '' 
+				or srs_nopa_cnt != null and srs_nopa_cnt != '' or srs_rdat_cnt != null and srs_rdat_cnt != '' or srs_nocr_cnt != null and srs_nocr_cnt != '' 
+				">
+					)
+					</if>
+				</trim>
+				</where>
+					 ) T
+				<choose>
+	 				<when test="page == 1">
+						WHERE T.rownumber &gt;= #{page} 
+					</when>
+					<otherwise>
+					 	WHERE T.rownumber &gt; = #{page}+1
+					</otherwise>
+				</choose>
+					AND T.rownumber &lt;= #{page2}
+	</select>
+	
+		<select id="getLearningListTotal" parameterType="com.kodasfiledata.parameter.LearningParameter" resultType="int">
+		SELECT COUNT(*) 
+		FROM OPN.VKD0102
+		<where>
+				<!-- <if test="environment1 != null and environment1 != '' and environment2 == null and environment2 == ''">
+					<choose>
+	 				<when test="'일반도로'.equals(environment1)">
+						AND TEST_ENVR_DSCD NOT LIKE '%C00600017%'
+					</when>
+					<otherwise>
+					 	AND TEST_ENVR_DSCD LIKE '%C00600017%'
+					</otherwise>
+				</choose>
+				</if> -->
+				<if test="environment1 != null and environment1 != ''">
+					<foreach item="environment1" index="index" collection="environment1" open="(" separator="or" close=")">
+						TEST_ENVR_DSCD = #{environment1}
+					</foreach>
+				</if>
+				<if test="location != null and location != ''">
+					AND OPRT_AREA_NM LIKE '%' || #{location} || '%'
+				</if>
+				<if test="sunlight != null and sunlight != ''">
+					AND ILMN_CL_NM = #{sunlight}
+				</if>
+				<if test="startDate != null and startDate!= '' and endDate != null and endDate != ''">
+					AND OPRT_YMD BETWEEN #{startDate} AND #{endDate}
+				</if>
+				<if test="lowVelocity != null and lowVelocity > 0 and highVelocity != null and highVelocity > 0">
+					AND OPRT_SPED_VAL BETWEEN #{lowVelocity} AND #{highVelocity}
+				</if>
+				<if test="weather != null and weather != ''">
+					AND WTHR_DS_NM = #{weather}
+				</if>
+				<if test="conditions != null and conditions != ''">
+					AND ROAD_CRCM_CLCD = #{conditions}
+				</if>
+				<if test="senTp != null and senTp != ''">
+					AND SEN_TP = #{senTp}
+				</if>
+				<if test= "learningType != null and learningType != ''">
+					AND DATA_TYPE = #{learningType}
+				</if>
+				<if test= "learningType2 != null and learningType2 != ''">
+					AND PSTN_NO = #{learningType2}
+				</if>
+				<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' 
+				or bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' 
+				or bet_mdst_cnt != null and bet_mdst_cnt != '' or brm_crsw_cnt != null and brm_crsw_cnt != '' or brm_stln_cnt != null and brm_stln_cnt != '' 
+				or brs_rdwk_cnt != null and brs_rdwk_cnt != '' or brs_stop_cnt != null and brs_stop_cnt != '' or brs_stln_cnt != null and brs_stln_cnt != '' 
+				or brs_etc_cnt != null and brs_etc_cnt != '' or brs_crsw_cnt != null and brs_crsw_cnt != '' or btl_bs_cnt != null and btl_bs_cnt != '' 
+				or btl_bus_cnt != null and btl_bus_cnt != '' or btl_vhcl_cnt != null and btl_vhcl_cnt != '' or btl_pds_cnt != null and btl_pds_cnt != '' 
+				or brm_sdbp_cnt != null and brm_sdbp_cnt != '' or brm_pcad_cnt != null and brm_pcad_cnt != '' or brm_dnir_cnt != null and brm_dnir_cnt != '' 
+				or brm_yd_cnt != null and brm_yd_cnt != '' or brs_desy_cnt != null and brs_desy_cnt != '' or brs_sfcn_cnt != null and brs_sfcn_cnt != '' 
+				or brs_norl_cnt != null and brs_norl_cnt != '' or brs_drze_cnt != null and brs_drze_cnt != '' or brs_nout_cnt != null and brs_nout_cnt != '' 
+				or brs_oewy_cnt != null and brs_oewy_cnt != '' or brs_hiwy_cnt != null and brs_hiwy_cnt != '' or brs_bs_cnt != null and brs_bs_cnt != '' 
+				or brs_nopk_cnt != null and brs_nopk_cnt != '' or brs_pkar_cnt != null and brs_pkar_cnt != '' or brs_nosd_cnt != null and brs_nosd_cnt != '' 
+				or brs_noen_cnt != null and brs_noen_cnt != '' or brs_hilt_cnt != null and brs_hilt_cnt != '' or brs_welt_cnt != null and brs_welt_cnt != '' 
+				or brs_mxsp_cnt != null and brs_mxsp_cnt != '' or brs_misp_cnt != null and brs_misp_cnt != '' or brs_nopg_cnt != null and brs_nopg_cnt != '' 
+				or brs_nopa_cnt != null and brs_nopa_cnt != '' or brs_rdat_cnt != null and brs_rdat_cnt != '' or brs_nocr_cnt != null and brs_nocr_cnt != '' 
+				or set_mdst_cnt != null and set_mdst_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or srm_stln_cnt != null and srm_stln_cnt != '' 
+				or srs_rdwk_cnt != null and srs_rdwk_cnt != '' or srs_stop_cnt != null and srs_stop_cnt != '' or srs_stln_cnt != null and srs_stln_cnt != '' 
+				or srs_etc_cnt != null and srs_etc_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or stl_bs_cnt != null and stl_bs_cnt != ''
+				or stl_bus_cnt != null and stl_bus_cnt != '' or stl_vhcl_cnt != null and stl_vhcl_cnt != '' or stl_pds_cnt != null and stl_pds_cnt != '' 
+				or srm_sdbp_cnt != null and srm_sdbp_cnt != '' or srm_pcad_cnt != null and srm_pcad_cnt != '' or srm_dnir_cnt != null and srm_dnir_cnt != '' 
+				or srm_yd_cnt != null and srm_yd_cnt != '' or srs_desy_cnt != null and srs_desy_cnt != '' or srs_sfcn_cnt != null and srs_sfcn_cnt != '' 
+				or srs_norl_cnt != null and srs_norl_cnt != '' or srs_drze_cnt != null and srs_drze_cnt != '' or srs_nout_cnt != null and srs_nout_cnt != '' 
+				or srs_oewy_cnt != null and srs_oewy_cnt != '' or srs_hiwy_cnt != null and srs_hiwy_cnt != '' or srs_bs_cnt != null and srs_bs_cnt != '' 
+				or srs_nopk_cnt != null and srs_nopk_cnt != '' or srs_pkar_cnt != null and srs_pkar_cnt != '' or srs_nosd_cnt != null and srs_nosd_cnt != '' 
+				or srs_noen_cnt != null and srs_noen_cnt != '' or srs_hilt_cnt != null and srs_hilt_cnt != '' or srs_welt_cnt != null and srs_welt_cnt != '' 
+				or srs_mxsp_cnt != null and srs_mxsp_cnt != '' or srs_misp_cnt != null and srs_misp_cnt != '' or srs_nopg_cnt != null and srs_nopg_cnt != '' 
+				or srs_nopa_cnt != null and srs_nopa_cnt != '' or srs_rdat_cnt != null and srs_rdat_cnt != '' or srs_nocr_cnt != null and srs_nocr_cnt != '' 
+				">
+				 AND (
+				 </if>
+				<trim prefixOverrides="OR">
+					<if test="person != null and person != ''">
+						OR HUMN_GRUP_CNT <![CDATA[>]]> 0
+					</if>
+	 				<if test="car != null and car != ''">
+						OR PASG_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="truck != null and truck != ''">
+						OR TRCK_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="bus != null and bus != ''">
+						OR BUS_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="specialCar != null and specialCar != ''">
+						OR SPAC_CNT <![CDATA[>]]> 0
+					</if>
+					<if test="motorCycle != null and motorCycle != ''">
+						OR MTCY_CNT <![CDATA[>]]> 0
+					</if>
+				<if test="bet_mdst_cnt != null and bet_mdst_cnt != ''">
+					OR bet_mdst_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_crsw_cnt != null and brm_crsw_cnt != ''">
+					OR brm_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_stln_cnt != null and brm_stln_cnt != ''">
+					OR brm_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_rdwk_cnt != null and brs_rdwk_cnt != ''">
+					OR brs_rdwk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_stop_cnt != null and brs_stop_cnt != ''">
+					OR brs_stop_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_stln_cnt != null and brs_stln_cnt != ''">
+					OR brs_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_etc_cnt != null and brs_etc_cnt != ''">
+					OR brs_etc_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_crsw_cnt != null and brs_crsw_cnt != ''">
+					OR brs_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_bs_cnt != null and btl_bs_cnt != ''">
+					OR btl_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_bus_cnt != null and btl_bus_cnt != ''">
+					OR btl_bus_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_vhcl_cnt != null and btl_vhcl_cnt != ''">
+					OR btl_vhcl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="btl_pds_cnt != null and btl_pds_cnt != ''">
+					OR btl_pds_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_sdbp_cnt != null and brm_sdbp_cnt != ''">
+					OR brm_sdbp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_pcad_cnt != null and brm_pcad_cnt != ''">
+					OR brm_pcad_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_dnir_cnt != null and brm_dnir_cnt != ''">
+					OR brm_dnir_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brm_yd_cnt != null and brm_yd_cnt != ''">
+					OR brm_yd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_desy_cnt != null and brs_desy_cnt != ''">
+					OR brs_desy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_sfcn_cnt != null and brs_sfcn_cnt != ''">
+					OR brs_sfcn_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_norl_cnt != null and brs_norl_cnt != ''">
+					OR brs_norl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_drze_cnt != null and brs_drze_cnt != ''">
+					OR brs_drze_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nout_cnt != null and brs_nout_cnt != ''">
+					OR brs_nout_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_oewy_cnt != null and brs_oewy_cnt != ''">
+					OR brs_oewy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_hiwy_cnt != null and brs_hiwy_cnt != ''">
+					OR brs_hiwy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_bs_cnt != null and brs_bs_cnt != ''">
+					OR brs_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nopk_cnt != null and brs_nopk_cnt != ''">
+					OR brs_nopk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_pkar_cnt != null and brs_pkar_cnt != ''">
+					OR brs_pkar_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nosd_cnt != null and brs_nosd_cnt != ''">
+					OR brs_nosd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_noen_cnt != null and brs_noen_cnt != ''">
+					OR brs_noen_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_hilt_cnt != null and brs_hilt_cnt != ''">
+					OR brs_hilt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_welt_cnt != null and brs_welt_cnt != ''">
+					OR brs_welt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_mxsp_cnt != null and brs_mxsp_cnt != ''">
+					OR brs_mxsp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_misp_cnt != null and brs_misp_cnt != ''">
+					OR brs_misp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nopg_cnt != null and brs_nopg_cnt != ''">
+					OR brs_nopg_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nopa_cnt != null and brs_nopa_cnt != ''">
+					OR brs_nopa_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_rdat_cnt != null and brs_rdat_cnt != ''">
+					OR brs_rdat_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="brs_nocr_cnt != null and brs_nocr_cnt != ''">
+					OR brs_nocr_cnt <![CDATA[>]]> 0
+				</if>
+				
+				<if test="set_mdst_cnt != null and set_mdst_cnt != ''">
+					OR set_mdst_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_crsw_cnt != null and srm_crsw_cnt != ''">
+					OR srm_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_stln_cnt != null and srm_stln_cnt != ''">
+					OR srm_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_rdwk_cnt != null and srs_rdwk_cnt != ''">
+					OR srs_rdwk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_stop_cnt != null and srs_stop_cnt != ''">
+					OR srs_stop_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_stln_cnt != null and srs_stln_cnt != ''">
+					OR srs_stln_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_etc_cnt != null and srs_etc_cnt != ''">
+					OR srs_etc_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_crsw_cnt != null and srm_crsw_cnt != ''">
+					OR srm_crsw_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_bs_cnt != null and stl_bs_cnt != ''">
+					OR stl_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_bus_cnt != null and stl_bus_cnt != ''">
+					OR stl_bus_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_vhcl_cnt != null and stl_vhcl_cnt != ''">
+					OR stl_vhcl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="stl_pds_cnt != null and stl_pds_cnt != ''">
+					OR stl_pds_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_sdbp_cnt != null and srm_sdbp_cnt != ''">
+					OR srm_sdbp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_pcad_cnt != null and srm_pcad_cnt != ''">
+					OR srm_pcad_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_dnir_cnt != null and srm_dnir_cnt != ''">
+					OR srm_dnir_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srm_yd_cnt != null and srm_yd_cnt != ''">
+					OR srm_yd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_desy_cnt != null and srs_desy_cnt != ''">
+					OR srs_desy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_sfcn_cnt != null and srs_sfcn_cnt != ''">
+					OR srs_sfcn_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_norl_cnt != null and srs_norl_cnt != ''">
+					OR srs_norl_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_drze_cnt != null and srs_drze_cnt != ''">
+					OR srs_drze_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nout_cnt != null and srs_nout_cnt != ''">
+					OR srs_nout_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_oewy_cnt != null and srs_oewy_cnt != ''">
+					OR srs_oewy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_hiwy_cnt != null and srs_hiwy_cnt != ''">
+					OR srs_hiwy_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_bs_cnt != null and srs_bs_cnt != ''">
+					OR srs_bs_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nopk_cnt != null and srs_nopk_cnt != ''">
+					OR srs_nopk_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_pkar_cnt != null and srs_pkar_cnt != ''">
+					OR srs_pkar_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nosd_cnt != null and srs_nosd_cnt != ''">
+					OR srs_nosd_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_noen_cnt != null and srs_noen_cnt != ''">
+					OR srs_noen_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_hilt_cnt != null and srs_hilt_cnt != ''">
+					OR srs_hilt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_welt_cnt != null and srs_welt_cnt != ''">
+					OR srs_welt_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_mxsp_cnt != null and srs_mxsp_cnt != ''">
+					OR srs_mxsp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_misp_cnt != null and srs_misp_cnt != ''">
+					OR srs_misp_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nopg_cnt != null and srs_nopg_cnt != ''">
+					OR srs_nopg_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nopa_cnt != null and srs_nopa_cnt != ''">
+					OR srs_nopa_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_rdat_cnt != null and srs_rdat_cnt != ''">
+					OR srs_rdat_cnt <![CDATA[>]]> 0
+				</if>
+				<if test="srs_nocr_cnt != null and srs_nocr_cnt != ''">
+					OR srs_nocr_cnt <![CDATA[>]]> 0
+				</if>
+				
+				<if test="person != null and person != '' or car != null and car != '' or truck != null and truck != '' 
+				or bus != null and bus != '' or specialCar != null and specialCar != '' or motorCycle != null and motorCycle != '' 
+				or bet_mdst_cnt != null and bet_mdst_cnt != '' or brm_crsw_cnt != null and brm_crsw_cnt != '' or brm_stln_cnt != null and brm_stln_cnt != '' 
+				or brs_rdwk_cnt != null and brs_rdwk_cnt != '' or brs_stop_cnt != null and brs_stop_cnt != '' or brs_stln_cnt != null and brs_stln_cnt != '' 
+				or brs_etc_cnt != null and brs_etc_cnt != '' or brs_crsw_cnt != null and brs_crsw_cnt != '' or btl_bs_cnt != null and btl_bs_cnt != '' 
+				or btl_bus_cnt != null and btl_bus_cnt != '' or btl_vhcl_cnt != null and btl_vhcl_cnt != '' or btl_pds_cnt != null and btl_pds_cnt != '' 
+				or brm_sdbp_cnt != null and brm_sdbp_cnt != '' or brm_pcad_cnt != null and brm_pcad_cnt != '' or brm_dnir_cnt != null and brm_dnir_cnt != '' 
+				or brm_yd_cnt != null and brm_yd_cnt != '' or brs_desy_cnt != null and brs_desy_cnt != '' or brs_sfcn_cnt != null and brs_sfcn_cnt != '' 
+				or brs_norl_cnt != null and brs_norl_cnt != '' or brs_drze_cnt != null and brs_drze_cnt != '' or brs_nout_cnt != null and brs_nout_cnt != '' 
+				or brs_oewy_cnt != null and brs_oewy_cnt != '' or brs_hiwy_cnt != null and brs_hiwy_cnt != '' or brs_bs_cnt != null and brs_bs_cnt != '' 
+				or brs_nopk_cnt != null and brs_nopk_cnt != '' or brs_pkar_cnt != null and brs_pkar_cnt != '' or brs_nosd_cnt != null and brs_nosd_cnt != '' 
+				or brs_noen_cnt != null and brs_noen_cnt != '' or brs_hilt_cnt != null and brs_hilt_cnt != '' or brs_welt_cnt != null and brs_welt_cnt != '' 
+				or brs_mxsp_cnt != null and brs_mxsp_cnt != '' or brs_misp_cnt != null and brs_misp_cnt != '' or brs_nopg_cnt != null and brs_nopg_cnt != '' 
+				or brs_nopa_cnt != null and brs_nopa_cnt != '' or brs_rdat_cnt != null and brs_rdat_cnt != '' or brs_nocr_cnt != null and brs_nocr_cnt != '' 
+				or set_mdst_cnt != null and set_mdst_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or srm_stln_cnt != null and srm_stln_cnt != '' 
+				or srs_rdwk_cnt != null and srs_rdwk_cnt != '' or srs_stop_cnt != null and srs_stop_cnt != '' or srs_stln_cnt != null and srs_stln_cnt != '' 
+				or srs_etc_cnt != null and srs_etc_cnt != '' or srm_crsw_cnt != null and srm_crsw_cnt != '' or stl_bs_cnt != null and stl_bs_cnt != ''
+				or stl_bus_cnt != null and stl_bus_cnt != '' or stl_vhcl_cnt != null and stl_vhcl_cnt != '' or stl_pds_cnt != null and stl_pds_cnt != '' 
+				or srm_sdbp_cnt != null and srm_sdbp_cnt != '' or srm_pcad_cnt != null and srm_pcad_cnt != '' or srm_dnir_cnt != null and srm_dnir_cnt != '' 
+				or srm_yd_cnt != null and srm_yd_cnt != '' or srs_desy_cnt != null and srs_desy_cnt != '' or srs_sfcn_cnt != null and srs_sfcn_cnt != '' 
+				or srs_norl_cnt != null and srs_norl_cnt != '' or srs_drze_cnt != null and srs_drze_cnt != '' or srs_nout_cnt != null and srs_nout_cnt != '' 
+				or srs_oewy_cnt != null and srs_oewy_cnt != '' or srs_hiwy_cnt != null and srs_hiwy_cnt != '' or srs_bs_cnt != null and srs_bs_cnt != '' 
+				or srs_nopk_cnt != null and srs_nopk_cnt != '' or srs_pkar_cnt != null and srs_pkar_cnt != '' or srs_nosd_cnt != null and srs_nosd_cnt != '' 
+				or srs_noen_cnt != null and srs_noen_cnt != '' or srs_hilt_cnt != null and srs_hilt_cnt != '' or srs_welt_cnt != null and srs_welt_cnt != '' 
+				or srs_mxsp_cnt != null and srs_mxsp_cnt != '' or srs_misp_cnt != null and srs_misp_cnt != '' or srs_nopg_cnt != null and srs_nopg_cnt != '' 
+				or srs_nopa_cnt != null and srs_nopa_cnt != '' or srs_rdat_cnt != null and srs_rdat_cnt != '' or srs_nocr_cnt != null and srs_nocr_cnt != '' 
+				">
+					)
+					</if>
+				</trim>
+		</where>
+	</select>
+	
+		<select id="getFixedList" parameterType="com.kodasfiledata.parameter.FixedParameter" resultType="com.kodasfiledata.entity.Fixed">
+			SELECT
+				SUM(NVL(SRM_SDBP_CNT, 0)) AS SRM_SDBP_CNT,
+				SUM(NVL(SRM_PCAD_CNT, 0)) AS SRM_PCAD_CNT,
+				SUM(NVL(SRM_DNIR_CNT, 0)) AS SRM_DNIR_CNT,
+				SUM(NVL(SRM_YD_CNT, 0)) AS SRM_YD_CNT,
+				SUM(NVL(SRM_STLE_CNT, 0)) AS SRM_STLE_CNT,
+				SUM(NVL(SRS_DESY_CNT, 0)) AS SRS_DESY_CNT,
+				SUM(NVL(SRS_SFCN_CNT, 0)) AS SRS_SFCN_CNT,
+				SUM(NVL(SRS_NORL_CNT, 0)) AS SRS_NORL_CNT,
+				SUM(NVL(SRS_DRZE_CNT, 0)) AS SRS_DRZE_CNT,
+				SUM(NVL(SRS_NOUT_CNT, 0)) AS SRS_NOUT_CNT,
+				SUM(NVL(SRS_OEWY_CNT, 0)) AS SRS_OEWY_CNT,
+				SUM(NVL(SRS_HIWY_CNT, 0)) AS SRS_HIWY_CNT,
+				SUM(NVL(SRS_BS_CNT, 0)) AS SRS_BS_CNT,
+				SUM(NVL(SRS_NOPK_CNT, 0)) AS SRS_NOPK_CNT,
+				SUM(NVL(SRS_PKAR_CNT, 0)) AS SRS_PKAR_CNT,
+				SUM(NVL(SRS_NOSD_CNT, 0)) AS SRS_NOSD_CNT,
+				SUM(NVL(SRS_NOEN_CNT, 0)) AS SRS_NOEN_CNT,
+				SUM(NVL(SRS_HILT_CNT, 0)) AS SRS_HILT_CNT,
+				SUM(NVL(SRS_WELT_CNT, 0)) AS SRS_WELT_CNT,
+				SUM(NVL(SRS_MXSP_CNT, 0)) AS SRS_MXSP_CNT,
+				SUM(NVL(SRS_MISP_CNT, 0)) AS SRS_MISP_CNT,
+				SUM(NVL(SRS_NOPG_CNT, 0)) AS SRS_NOPG_CNT,
+				SUM(NVL(SRS_NOPA_CNT, 0)) AS SRS_NOPA_CNT,
+				SUM(NVL(SRS_RDAT_CNT, 0)) AS SRS_RDAT_CNT,
+				SUM(NVL(SRS_NOCR_CNT, 0)) AS SRS_NOCR_CNT,
+				SUM(NVL(SRS_PNCG_CNT, 0)) AS SRS_PNCG_CNT,
+				SUM(NVL(SET_MDST_CNT, 0)) AS SET_MDST_CNT,
+				SUM(NVL(SRM_CRSW_CNT, 0)) AS SRM_CRSW_CNT,
+				SUM(NVL(SRS_ETC_CNT, 0)) AS SRS_ETC_CNT,
+				SUM(NVL(SRS_RDWK_CNT, 0)) AS SRS_RDWK_CNT,
+				SUM(NVL(SRS_STOP_CNT, 0)) AS SRS_STOP_CNT,
+				SUM(NVL(SRS_STLN_CNT, 0)) AS SRS_STLN_CNT,
+				SUM(NVL(STL_BS_CNT, 0)) AS STL_BS_CNT,
+				SUM(NVL(STL_BUS_CNT, 0)) AS STL_BUS_CNT,
+				SUM(NVL(STL_VHCL_CNT, 0)) AS STL_VHCL_CNT,
+				SUM(NVL(STL_PDS_CNT, 0)) AS STL_PDS_CNT,
+				SUM(NVL(BRM_SDBP_CNT, 0)) AS BRM_SDBP_CNT,
+				SUM(NVL(BRM_PCAD_CNT, 0)) AS BRM_PCAD_CNT,
+				SUM(NVL(BRM_DNIR_CNT, 0)) AS BRM_DNIR_CNT,
+				SUM(NVL(BRM_YD_CNT, 0)) AS BRM_YD_CNT,
+				SUM(NVL(BRS_DESY_CNT, 0)) AS BRS_DESY_CNT,
+				SUM(NVL(BRS_SFCN_CNT, 0)) AS BRS_SFCN_CNT,
+				SUM(NVL(BRS_NORL_CNT, 0)) AS BRS_NORL_CNT,
+				SUM(NVL(BRS_DRZE_CNT, 0)) AS BRS_DRZE_CNT,
+				SUM(NVL(BRS_NOUT_CNT, 0)) AS BRS_NOUT_CNT,
+				SUM(NVL(BRS_OEWY_CNT, 0)) AS BRS_OEWY_CNT,
+				SUM(NVL(BRS_HIWY_CNT, 0)) AS BRS_HIWY_CNT,
+				SUM(NVL(BRS_BS_CNT, 0)) AS BRS_BS_CNT,
+				SUM(NVL(BRS_NOPK_CNT, 0)) AS BRS_NOPK_CNT,
+				SUM(NVL(BRS_PKAR_CNT, 0)) AS BRS_PKAR_CNT,
+				SUM(NVL(BRS_NOSD_CNT, 0)) AS BRS_NOSD_CNT,
+				SUM(NVL(BRS_NOEN_CNT, 0)) AS BRS_NOEN_CNT,
+				SUM(NVL(BRS_HILT_CNT, 0)) AS BRS_HILT_CNT,
+				SUM(NVL(BRS_WELT_CNT, 0)) AS BRS_WELT_CNT,
+				SUM(NVL(BRS_MXSP_CNT, 0)) AS BRS_MXSP_CNT,
+				SUM(NVL(BRS_MISP_CNT, 0)) AS BRS_MISP_CNT,
+				SUM(NVL(BRS_NOPG_CNT, 0)) AS BRS_NOPG_CNT,
+				SUM(NVL(BRS_NOPA_CNT, 0)) AS BRS_NOPA_CNT,
+				SUM(NVL(BRS_RDAT_CNT, 0)) AS BRS_RDAT_CNT,
+				SUM(NVL(BRS_NOCR_CNT, 0)) AS BRS_NOCR_CNT,
+				SUM(NVL(BET_MDST_CNT, 0)) AS BET_MDST_CNT,
+				SUM(NVL(BRM_CRSW_CNT, 0)) AS BRM_CRSW_CNT,
+				SUM(NVL(BRM_STLN_CNT, 0)) AS BRM_STLN_CNT,
+				SUM(NVL(BRS_RDWK_CNT, 0)) AS BRS_RDWK_CNT,
+				SUM(NVL(BRS_STOP_CNT, 0)) AS BRS_STOP_CNT,
+				SUM(NVL(BRS_STLN_CNT, 0)) AS BRS_STLN_CNT,
+				SUM(NVL(BRS_ETC_CNT, 0)) AS BRS_ETC_CNT,
+				SUM(NVL(BRS_CRSW_CNT, 0)) AS BRS_CRSW_CNT,
+				SUM(NVL(BTL_BS_CNT, 0)) AS BTL_BS_CNT,
+				SUM(NVL(BTL_BUS_CNT, 0)) AS BTL_BUS_CNT,
+				SUM(NVL(BTL_VHCL_CNT, 0)) AS BTL_VHCL_CNT,
+				SUM(NVL(BTL_PDS_CNT, 0)) AS BTL_PDS_CNT
+			
+			<choose>
+	 				<when test="dataType != null and dataType != '' and dataType != 'false'">
+						FROM OPN.VKD0102 WHERE DATA_TYPE = #{dataType};
+					</when>
+					<otherwise>
+						FROM OPN.VKD0102;
+					</otherwise>
+				</choose>
+	</select>
+	</mapper>
